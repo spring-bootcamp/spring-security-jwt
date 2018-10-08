@@ -1,2 +1,2 @@
-# spring-basic
-# spring-security-jwt
+# Spring Security with JWT
+

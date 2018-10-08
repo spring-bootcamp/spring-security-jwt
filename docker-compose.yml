@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: dev
+      DB_USER: gb_grad
+      USER_PASSWD:
+    hostname: mysql
+    ports:
+      - '3306:3306'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --lower_case_table_names=1
+    volumes:
+      - ./config/db/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  redis:
+    tty: true
+    image: redis:alpine
+    hostname: redis
+    restart: always
+    ports:
+      - '6378:6379'
+    stdin_open: true
+
+  sems-server:
+    build: .
+    ports:
+      - '8088:8088'
+    environment:
+      ACTIVE_PROFILE: prod
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: dev
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      - mysql
+      - redis
+
+  nginx:
+    image: nginx
+    ports:
+      - '80:80'
+    depends_on:
+      - sems-server
+    volumes:
+      - ./config/nginx_base.conf:/etc/nginx/nginx.conf
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /root/app/build/frontend/:/app/frontend/
