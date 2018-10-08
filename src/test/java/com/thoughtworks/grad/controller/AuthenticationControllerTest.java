@@ -5,22 +5,16 @@ import com.thoughtworks.grad.configuration.security.LoginRequestUser;
 import com.thoughtworks.grad.domain.Privilege;
 import com.thoughtworks.grad.domain.Role;
 import com.thoughtworks.grad.domain.User;
-import com.thoughtworks.grad.repository.PrivilegeRepository;
 import com.thoughtworks.grad.repository.RoleRepository;
 import com.thoughtworks.grad.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.ArrayList;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,7 +30,7 @@ class AuthenticationControllerTest extends BaseControllerTest {
     private RoleRepository roleRepository;
 
     @Autowired
-    private PrivilegeRepository privilegeRepository;
+    private PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -44,20 +38,19 @@ class AuthenticationControllerTest extends BaseControllerTest {
     void setup() {
         super.setup();
         Privilege privilegeCreateUser = new Privilege("CREATE_USER");
-        privilegeRepository.save(privilegeCreateUser);
 
-        Role systemAdmin = Role.builder().symbol("SYSTEM_ADMIN").build();
+        Role systemAdmin = Role.builder().symbol("SYSTEM_ADMIN").privileges(new ArrayList<>()).build();
         systemAdmin.getPrivileges().add(privilegeCreateUser);
 
         roleRepository.save(systemAdmin);
 
         userRepository.save(User.builder().role(systemAdmin)
                 .telephoneNumber("18192235667")
-                .name("future_star").password("123").build());
+                .name("future_star").password(passwordEncoder.encode("123")).build());
     }
 
     @AfterEach
-    void teardown(){
+    void teardown() {
         userRepository.deleteAllInBatch();
     }
 

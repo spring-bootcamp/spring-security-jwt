@@ -19,8 +19,7 @@ public class Role implements Serializable {
     @Id
     private String symbol;
 
-    @ManyToMany
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "t_role_privilege",
             joinColumns = @JoinColumn(name = "role_symbol", referencedColumnName = "symbol"),
             inverseJoinColumns = @JoinColumn(name = "privilege_symbol", referencedColumnName = "symbol"))
