@@ -5,14 +5,5 @@ spring:
     platform: h2
     username: spring_security_jwt
     password:
-    tomcat:
-      max-active: 50
-      max-wait: 10000
-      test-on-borrow: true
-      initial-size: 5
-      min-idle: 5
-      validation-query: SELECT 1
   jpa:
-    hibernate:
-      ddl-auto: validate
     database-platform: org.hibernate.dialect.H2Dialect
