@@ -5,6 +5,7 @@ import com.thoughtworks.grad.configuration.security.LoginRequestUser;
 import com.thoughtworks.grad.domain.Privilege;
 import com.thoughtworks.grad.domain.Role;
 import com.thoughtworks.grad.domain.User;
+import com.thoughtworks.grad.repository.PrivilegeRepository;
 import com.thoughtworks.grad.repository.RoleRepository;
 import com.thoughtworks.grad.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,6 +32,10 @@ class AuthenticationControllerTest extends BaseControllerTest {
     private RoleRepository roleRepository;
 
     @Autowired
+    private PrivilegeRepository privilegeRepository;
+
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
 
@@ -38,20 +44,22 @@ class AuthenticationControllerTest extends BaseControllerTest {
     void setup() {
         super.setup();
         Privilege privilegeCreateUser = new Privilege("CREATE_USER");
+        privilegeRepository.save(privilegeCreateUser);
 
         Role systemAdmin = Role.builder().symbol("SYSTEM_ADMIN").privileges(new ArrayList<>()).build();
         systemAdmin.getPrivileges().add(privilegeCreateUser);
 
         roleRepository.save(systemAdmin);
 
-        userRepository.save(User.builder().role(systemAdmin)
-                .telephoneNumber("18192235667")
+        userRepository.save(User.builder().role(systemAdmin).id(UUID.randomUUID().toString())
                 .name("future_star").password(passwordEncoder.encode("123")).build());
     }
 
     @AfterEach
     void teardown() {
         userRepository.deleteAllInBatch();
+        privilegeRepository.deleteAllInBatch();
+        roleRepository.deleteAllInBatch();
     }
 
 

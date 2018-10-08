@@ -38,8 +38,10 @@ dependencies {
 
 	compile('io.jsonwebtoken:jjwt:0.7.0')
 
-	compile('org.flywaydb:flyway-core:5.1.4')
+	runtimeOnly('org.flywaydb:flyway-core:5.1.4')
 	compile('mysql:mysql-connector-java')
+
+	testRuntimeOnly('com.h2database:h2:1.4.197')
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile "org.junit.jupiter:junit-jupiter-api:${JUNIT5_API_VERSION}"

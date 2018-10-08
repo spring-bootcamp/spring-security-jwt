@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,17 +16,16 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
 
+    @Column(unique = true)
     private String name;
 
     private String password;
 
-    @Column(unique = true)
-    private String telephoneNumber;
 
     public User() {
+        id = UUID.randomUUID().toString();
     }
 
     @OneToOne
